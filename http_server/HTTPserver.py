@@ -51,20 +51,26 @@ while True:
 
     request_str = request.decode('utf-8')
 
-    # pegando somente o arquivo solicitado e o metodo HTTP
-    method_name, file_name = request_str.split(' ')[0:2]
+    try:
+        # pegando somente o arquivo solicitado e o metodo HTTP
+        method_name, file_name = request_str.split(' ')[0:2]
+        check_msg = True
+    except:
+        response = http_response(400)
+        check_msg = False
 
-    if method_name != 'GET': response = http_response(400)
+    if check_msg:
+        if method_name != 'GET': response = http_response(400)
 
-    elif file_name == '/': 
-        page = open('./index.html').read()
-        response = http_response(200, page)
-    else:
-        try:
-            page = open('.' + file_name, 'r').read()
+        elif file_name == '/': 
+            page = open('./index.html').read()
             response = http_response(200, page)
-        except:
-            response = http_response(404)
+        else:
+            try:
+                page = open('.' + file_name, 'r').read()
+                response = http_response(200, page)
+            except:
+                response = http_response(404)
 
     # servidor retorna o que foi solicitado pelo cliente (neste caso a resposta e generica)
     client_connection.send(response.encode('utf-8'))
